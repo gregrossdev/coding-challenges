@@ -1,3 +1,7 @@
+import lexer.JsonLexer;
+import lexer.Token;
+import parser.JsonParser;
+
 import java.util.List;
 
 public class JsonParserApplication {
@@ -5,16 +9,17 @@ public class JsonParserApplication {
         JsonLexer lexer = new JsonLexer();
         JsonParser parser = new JsonParser();
 
-        String validJson = "{}";
-        String invalidJson = "{";
+        String validJson = "{\"key\": \"value\"}";
+        String invalidJson = "{\"key\": value}";
 
-        List<JsonLexer.Token> validTokens = lexer.tokenize(validJson);
-        List<JsonLexer.Token> invalidTokens = lexer.tokenize(invalidJson);
+        List<Token> validTokens = lexer.tokenize(validJson);
+        List<Token> invalidTokens = lexer.tokenize(invalidJson);
 
 //        if (parser.parse(validTokens)) {
 //            System.out.println("Valid JSON");
 //            System.exit(0);
-//        } else {
+//        }
+//        else {
 //            System.out.println("Invalid JSON");
 //            System.exit(1);
 //        }
