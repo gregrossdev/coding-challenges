@@ -41,7 +41,12 @@ public class JsonParser {
 
             skipWhitespace(iterator);
 
-            if (!iterator.hasNext() || iterator.next().type != TokenType.STRING) {
+            if (!iterator.hasNext()) {
+                return false;
+            }
+
+            token = iterator.next();
+            if (token.type != TokenType.STRING && token.type != TokenType.NUMBER && token.type != TokenType.BOOLEAN && token.type != TokenType.NULL) {
                 return false;
             }
 
@@ -74,7 +79,6 @@ public class JsonParser {
         while (iterator.hasNext()) {
             Token token = iterator.next();
             if (token.type != TokenType.WHITESPACE) {
-                // Move the iterator back one step
                 iterator.previous();
                 break;
             }
