@@ -28,7 +28,16 @@ public class JsonParser {
             return true;
         }
 
+        iterator.previous();
+
         while (true) {
+            skipWhitespace(iterator);
+
+            if (!iterator.hasNext()) {
+                return false;
+            }
+
+            token = iterator.next();
             if (token.type != TokenType.STRING) {
                 return false;
             }
@@ -46,7 +55,7 @@ public class JsonParser {
             }
 
             token = iterator.next();
-            if (token.type != TokenType.STRING && token.type != TokenType.NUMBER && token.type != TokenType.BOOLEAN && token.type != TokenType.NULL) {
+            if (!parseValue(token, iterator)) {
                 return false;
             }
 
@@ -64,6 +73,38 @@ public class JsonParser {
             if (token.type != TokenType.COMMA) {
                 return false;
             }
+        }
+    }
+
+    private boolean parseArray(ListIterator<Token> iterator) {
+        if (!iterator.hasNext() || iterator.next().type != TokenType.LEFT_BRACKET) {
+            return false;
+        }
+
+        skipWhitespace(iterator);
+
+        if (!iterator.hasNext()) {
+            return false;
+        }
+
+        Token token = iterator.next();
+        if (token.type == TokenType.RIGHT_BRACKET) {
+            return true;
+        }
+
+        iterator.previous();
+
+        while (true) {
+            skipWhitespace(iterator);
+
+            if (!iterator.hasNext()) {
+                return false;
+            }
+
+            token = iterator.next();
+            if (!parseValue(token, iterator)) {
+                return false;
+            }
 
             skipWhitespace(iterator);
 
@@ -72,6 +113,31 @@ public class JsonParser {
             }
 
             token = iterator.next();
+            if (token.type == TokenType.RIGHT_BRACKET) {
+                return true;
+            }
+
+            if (token.type != TokenType.COMMA) {
+                return false;
+            }
+        }
+    }
+
+    private boolean parseValue(Token token, ListIterator<Token> iterator) {
+        switch (token.type) {
+            case STRING:
+            case NUMBER:
+            case BOOLEAN:
+            case NULL:
+                return true;
+            case LEFT_BRACE:
+                iterator.previous();
+                return parseObject(iterator);
+            case LEFT_BRACKET:
+                iterator.previous();
+                return parseArray(iterator);
+            default:
+                return false;
         }
     }
 
